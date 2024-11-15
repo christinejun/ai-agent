@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
-load_dotenv()
 import openai
 import os
+load_dotenv(override=True)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 import streamlit as st
@@ -36,6 +36,7 @@ chat = ChatOpenAI(model="gpt-4o-mini-2024-07-18", temperature=0.1)
 #response = chat.invoke("오늘 날짜가 뭐야? ")
 #print(response.content)
 
+
 # 1) WEB 데이터 로드하기
 loader = WebBaseLoader("https://en.wikipedia.org/wiki/Elon_Musk")
 #loader = WebBaseLoader("https://skt-basic-ui-component.webflow.io/")
@@ -54,7 +55,7 @@ chunk_overlap = 200
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
 all_splits = text_splitter.split_documents(data)
 
-#pprint(all_splits)
+pprint(all_splits)
 #print("="*50)
 # 메타데이터가 잘 작성되었는지, 텍스트가 잘 잘렸는지 확인
 #pprint(all_splits[0].metadata)
@@ -103,6 +104,7 @@ context: {context}
 user input: {input}
 """
 
+
 prompt = ChatPromptTemplate.from_template(template)
 
 # RunnableParallel의 역할: 병렬로 속도를 높이기 위해 작업 처리.
@@ -119,7 +121,7 @@ chain = retrieval | prompt | chat | StrOutputParser()
 #response = chain.invoke({'input':"Explain Dalpha AI Store"})
 #print(response)
 
-st.title("AI Chatbot")
+st.title("AI Chatbot for UI Component Guide")
 
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini-2024-07-18"
@@ -169,5 +171,3 @@ if prompt := st.chat_input("대화를 시작하세요"):
 
 print("_______________________")
 print(st.session_state.messages)
-
-
