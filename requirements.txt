@@ -10,3 +10,4 @@ langchain-core==0.3.7
 PyMuPDF
 pdfplumber
 beautifulsoup4
+pysqlite3-binary
