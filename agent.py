@@ -40,19 +40,83 @@ chat = ChatOpenAI(model="gpt-4o-mini-2024-07-18", temperature=0.1)
 #response = chat.invoke("오늘 날짜가 뭐야? ")
 #print(response.content)
 
+import requests
+from bs4 import BeautifulSoup
+
+# # Function to extract iframe content
+# def extract_iframe_content(url):
+#     response = requests.get(url)
+#     soup = BeautifulSoup(response.content, 'html.parser')
+    
+#     # Find all iframes on the page
+#     iframes = soup.find_all('iframe')
+    
+#     iframe_data = []
+#     for iframe in iframes:
+#         # Extract the src attribute (URL of the iframe content)
+#         iframe_src = iframe.get('src')
+#         if iframe_src:
+#             # Make a request to the iframe URL
+#             try:
+#                 iframe_response = requests.get(iframe_src)
+#                 if iframe_response.status_code == 200:
+#                     # Parse and store the iframe's HTML content
+#                     iframe_soup = BeautifulSoup(iframe_response.content, 'html.parser')
+#                     iframe_data.append(iframe_soup.get_text())
+#             except Exception as e:
+#                 print(f"Error fetching iframe {iframe_src}: {e}")
+    
+#     return '\n'.join(iframe_data)
+
+# URLs to scrape
+urls = [
+    "https://skt-basic-ui-component.webflow.io/ui-components",
+    "https://skt-basic-ui-component.webflow.io/ux-writing",
+    "https://skt-basic-ui-component.webflow.io/navigation",
+    "https://skt-basic-ui-component.webflow.io/buttons",
+    "https://skt-basic-ui-component.webflow.io/fabs",
+    "https://skt-basic-ui-component.webflow.io/device-back-button",
+    "https://skt-basic-ui-component.webflow.io/tabs",
+    "https://skt-basic-ui-component.webflow.io/top-app-bar",
+    "https://skt-basic-ui-component.webflow.io/dialogs",
+    "https://skt-basic-ui-component.webflow.io/bottom-sheets",
+    "https://skt-basic-ui-component.webflow.io/radio-button-checkbox",
+    "https://skt-basic-ui-component.webflow.io/text-fields",
+    "https://skt-basic-ui-component.webflow.io/lists",
+    "https://skt-basic-ui-component.webflow.io/image-lists",
+    "https://skt-basic-ui-component.webflow.io/progress-indicators"
+]
+
+# Combine main page data with iframe data
+all_data = []
+for url in urls:
+    # Load main page data using WebBaseLoader
+    loader = WebBaseLoader(url)
+    data = loader.load()
+    
+    # Extract data from iframes on the page
+    #iframe_content = extract_iframe_content(url)
+    
+    # Add both main page and iframe data to all_data list
+    all_data.extend(data)  # Main page data
+    #all_data.append(iframe_content)  # Iframe data
+
+data = all_data
+
+
 
 # 1) WEB 데이터 로드하기
-loader = WebBaseLoader("https://en.wikipedia.org/wiki/Elon_Musk")
+#loader = WebBaseLoader("https://en.wikipedia.org/wiki/Elon_Musk")
 #loader = WebBaseLoader("https://skt-basic-ui-component.webflow.io/")
-data = loader.load()
+#data = loader.load()
 
 # 2) 데이터 쪼개기
 # chunk_size는 쪼갤 텍스트의 사이즈를 뜻합니다.
 # 쪼개는 이유는 context window가 제한되어 있기 때문.
 # 만약 더 큰 데이터 파일이고 chunk_size가 높다면, chunk_overlap = 200으로 설정
 # 각 청크 사이에 중요한 맥락을 놓치지 않도록 어느정도 중복되게 하는 것
-chunk_size = 1000
-chunk_overlap = 200
+chunk_size = 500
+chunk_overlap = 100
 
 # RecursiveCharacterTextSplitter: 문서를 \n과 같은 일반적인 구분자를 사용하여 재귀적으로 분할하여 각 청크가 적절한 크기가 될 때까지 분할합니다.
 # chunk_overlap은 전 문장의 의미를 어느정도 연결할 수 있도록 하는 역할을 합니다. 보통 10 ~ 20% 정도의 chunk를 할당합니다.
